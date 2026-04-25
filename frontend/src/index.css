@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+/* AQI bucket custom colors as CSS variables */
+@theme {
+  --color-good: #2ecc71;
+  --color-satisfactory: #a8d08d;
+  --color-moderate: #f9c74f;
+  --color-poor: #f77f00;
+  --color-verypoor: #d62828;
+  --color-severe: #6a040f;
+  --font-sans: 'Inter', sans-serif;
+}
+
+body {
+  background-color: #0f172a;
+  color: #f1f5f9;
+  font-family: 'Inter', sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #1e293b;
+}
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 3px;
+}
