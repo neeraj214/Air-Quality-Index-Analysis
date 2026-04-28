@@ -10,9 +10,9 @@
 [![GitHub repo size](https://img.shields.io/github/repo-size/neeraj214/Air-Quality-Index-Analysis?style=for-the-badge)](https://github.com/neeraj214/Air-Quality-Index-Analysis)
 [![GitHub top language](https://img.shields.io/github/languages/top/neeraj214/Air-Quality-Index-Analysis?style=for-the-badge)](https://github.com/neeraj214/Air-Quality-Index-Analysis)
 
-**A sophisticated Machine Learning system to predict AQI levels across major Indian cities using real-time pollutant data.**
+**A comprehensive Machine Learning system for predicting and analyzing Air Quality Index (AQI) levels across major Indian cities.**
 
-[Exploration](#-exploration) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Usage](#-usage) • [Contributing](#-contributing)
+[Exploration](#-exploration) • [Features](#-key-features) • [Tech Stack](#-tech-stack) • [Installation](#-installation) • [Usage](#-usage) • [Evaluation](#-model-evaluation)
 
 </div>
 
@@ -20,64 +20,102 @@
 
 ## 🚀 Overview
 
-This project provides an end-to-end pipeline for analyzing and predicting Air Quality Index (AQI) levels. It specifically targets major Indian hubs including **Delhi, Bangalore, Kolkata, and Hyderabad**. By leveraging advanced ML algorithms, it predicts pollutant levels and provides a user-friendly dashboard for visualization.
+This project provides an end-to-end data science and engineering pipeline for AQI analysis. It encompasses everything from Exploratory Data Analysis (EDA) and feature engineering to model training, evaluation, and deployment via a FastAPI backend and a React-based frontend dashboard. 
 
-## 🛠️ Tech Stack
-
-<div align="center">
-
-| Area | Technologies |
-| :--- | :--- |
-| **Frontend** | ![React](https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB) ![Tailwind](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white) ![Framer](https://img.shields.io/badge/Framer_Motion-0055FF?style=flat-square&logo=framer&logoColor=white) |
-| **Backend** | ![FastAPI](https://img.shields.io/badge/fastapi-109989?style=flat-square&logo=fastapi&logoColor=white) ![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white) ![Docker](https://img.shields.io/badge/Docker-2496ED?style=flat-square&logo=docker&logoColor=white) |
-| **Machine Learning** | ![Scikit-learn](https://img.shields.io/badge/scikit_learn-F7931E?style=flat-square&logo=scikit-learn&logoColor=white) ![XGBoost](https://img.shields.io/badge/XGBoost-black?style=flat-square) ![LightGBM](https://img.shields.io/badge/LightGBM-blue?style=flat-square) |
-| **Data** | ![Pandas](https://img.shields.io/badge/Pandas-150458?style=flat-square&logo=pandas&logoColor=white) ![NumPy](https://img.shields.io/badge/NumPy-013243?style=flat-square&logo=numpy&logoColor=white) |
-
-</div>
+The system specifically targets major Indian metropolitan areas: **Delhi, Bengaluru, Kolkata, and Hyderabad**.
 
 ## ✨ Key Features
 
-- 📈 **Real-time Visualization**: Interactive charts and gauges for pollutant levels.
-- 🔮 **Predictive Analytics**: High-accuracy AQI predictions using SMOTE-enhanced datasets.
-- 🏙️ **City-wise Analysis**: Tailored insights for specific Indian metropolises.
-- 📱 **Responsive Design**: Seamless experience across mobile and desktop.
-- ⚡ **Fast API**: High-performance backend for model serving.
+- 📉 **Advanced Analytics**: Detailed EDA of pollutant trends across different seasons and cities.
+- 🔮 **Dual-Mode Prediction**:
+  - **Regression**: Predict exact AQI values (R² Score: ~0.94).
+  - **Classification**: Categorize air quality into buckets (Good, Satisfactory, Moderate, etc.) with ~82% accuracy.
+- ⚖️ **Class Balancing**: Utilizes SMOTE to handle class imbalance in air quality categories.
+- ⚡ **High-Performance API**: FastAPI-based REST backend for real-time inference.
+- 📊 **Interactive Dashboard**: React frontend featuring gauges, charts, and health advisories.
+- 🔍 **Model Explainability**: SHAP (SHapley Additive exPlanations) values used to interpret model decisions.
+- 🐳 **Dockerized**: Containerized backend for seamless deployment.
 
-## 📅 Project Phases
+## 🛠️ Tech Stack
 
-- [x] **Phase 1: EDA** - Exploratory Data Analysis of pollutant trends.
-- [x] **Phase 2: Preprocessing** - Handling missing values and SMOTE for class balance.
-- [x] **Phase 3: Model Training** - Comparing XGBoost, LightGBM, and Random Forest.
-- [x] **Phase 4: Model Evaluation** - R2 Score, RMSE, and MAE metrics.
-- [/] **Phase 5: FastAPI Backend** - Building the REST API.
-- [/] **Phase 6: React Frontend** - Developing the dashboard.
-- [ ] **Phase 7: Deployment** - Pushing to Vercel and Hugging Face.
+| Area | Technologies |
+| :--- | :--- |
+| **Frontend** | React, Tailwind CSS, Framer Motion, Recharts, Axios |
+| **Backend** | FastAPI, Uvicorn, Pydantic |
+| **Machine Learning** | Scikit-learn, XGBoost, LightGBM, SHAP, Joblib |
+| **Data Processing**| Pandas, NumPy, Imbalanced-learn (SMOTE) |
+| **DevOps** | Docker, Git |
+
+## 📅 Project Status
+
+- [x] **Phase 1: EDA** - Exploratory Data Analysis and visualization.
+- [x] **Phase 2: Preprocessing** - Missing value imputation, feature engineering, and SMOTE resampling.
+- [x] **Phase 3: Model Training** - Training Regressors (XGBoost, Random Forest) and Classifiers.
+- [x] **Phase 4: Model Evaluation** - Detailed metrics (R², MAE, RMSE) and SHAP analysis.
+- [x] **Phase 5: FastAPI Backend** - Building the production-ready REST API.
+- [x] **Phase 6: React Frontend** - Developing the interactive dashboard.
+- [ ] **Phase 7: Deployment** - Final deployment to cloud platforms.
 
 ## ⚙️ Installation
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/neeraj214/Air-Quality-Index-Analysis.git
-   cd Air-Quality-Index-Analysis
-   ```
+### 1. Clone the repository
+```bash
+git clone https://github.com/neeraj214/Air-Quality-Index-Analysis.git
+cd Air-Quality-Index-Analysis
+```
 
-2. **Setup Backend**
-   ```bash
-   python -m venv venv
-   source venv/bin/activate # or venv\Scripts\activate
-   pip install -r requirements.txt
-   ```
+### 2. Backend Setup
+```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-3. **Setup Frontend**
-   ```bash
-   cd frontend
-   npm install
-   npm run dev
-   ```
+# Install dependencies
+pip install -r requirements.txt
+pip install -r backend/requirements.txt
+```
+
+### 3. Frontend Setup
+```bash
+cd frontend
+npm install
+```
+
+## 🖥️ Usage
+
+### Running the API (Backend)
+```bash
+cd backend
+uvicorn main:app --reload --port 8000
+```
+- **API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
+
+### Running the Dashboard (Frontend)
+```bash
+cd frontend
+npm run dev
+```
+- **URL**: [http://localhost:5173](http://localhost:5173)
+
+### Running with Docker
+```bash
+docker build -t aqi-backend -f backend/Dockerfile .
+docker run -p 8000:8000 aqi-backend
+```
+
+## 📊 Model Evaluation
+
+Our models were evaluated on a comprehensive test set.
+
+| Model Type | Best Algorithm | Metric | Value |
+| :--- | :--- | :--- | :--- |
+| **Regression** | XGBoost | R² Score | **0.9425** |
+| **Classification** | Random Forest | Accuracy | **82.22%** |
+
+Refer to `reports/evaluation_summary.txt` and `reports/figures/` for detailed metrics and plots including Confusion Matrices and SHAP Summary plots.
 
 ## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
