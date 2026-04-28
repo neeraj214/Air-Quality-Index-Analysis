@@ -1,0 +1,9 @@
+Model,Type,MAE,RMSE,R2,Time(s),Accuracy,F1_Macro,F1_Weighted
+LinearRegression,Regression,22.43,36.429,0.8828,0.0,,,
+RandomForest,Regression,16.26,27.336,0.934,1.9,,,
+XGBoost,Regression,15.581,25.517,0.9425,2.3,,,
+LightGBM,Regression,16.022,26.04,0.9401,0.3,,,
+LogisticRegression,Classification,,,,2.1,0.7387,0.7001,0.7459
+RandomForest,Classification,,,,1.4,0.8222,0.7924,0.8227
+XGBoost,Classification,,,,2.6,0.8199,0.7889,0.8206
+LightGBM,Classification,,,,2.0,0.8115,0.7729,0.812
