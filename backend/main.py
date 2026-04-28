@@ -1,12 +1,131 @@
-"""
-main.py
-FastAPI application entry point for AQI prediction backend.
-"""
-from fastapi import FastAPI
+from fastapi             import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses   import JSONResponse
+from datetime            import datetime
+import traceback
 
-app = FastAPI(title="AQI Prediction API", version="1.0.0")
+from config  import (
+    APP_TITLE, APP_DESCRIPTION, APP_VERSION,
+    ALLOWED_ORIGINS, CITIES, BUCKET_LABELS, FEATURE_COLS
+)
+from schemas import (
+    PredictRequest, PredictResponse,
+    BatchPredictRequest, BatchPredictResponse,
+    HealthResponse, ModelInfoResponse
+)
+from predict import run_prediction, regressor, classifier
 
+# -----------------------------------------------------------------------
+# App Init
+# -----------------------------------------------------------------------
+app = FastAPI(
+    title       = APP_TITLE,
+    description = APP_DESCRIPTION,
+    version     = APP_VERSION,
+    docs_url    = '/docs',
+    redoc_url   = '/redoc',
+)
 
-@app.get("/")
+# -----------------------------------------------------------------------
+# CORS
+# -----------------------------------------------------------------------
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins     = ALLOWED_ORIGINS,
+    allow_credentials = True,
+    allow_methods     = ['*'],
+    allow_headers     = ['*'],
+)
+
+# -----------------------------------------------------------------------
+# Global Exception Handler
+# -----------------------------------------------------------------------
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(
+        status_code=500,
+        content={
+            'error'  : 'Internal server error',
+            'detail' : str(exc),
+            'path'   : str(request.url),
+        }
+    )
+
+# -----------------------------------------------------------------------
+# GET /health
+# -----------------------------------------------------------------------
+@app.get('/health', response_model=HealthResponse, tags=['System'])
+def health_check():
+    return HealthResponse(
+        status    = 'ok',
+        version   = APP_VERSION,
+        timestamp = datetime.utcnow().isoformat() + 'Z',
+    )
+
+# -----------------------------------------------------------------------
+# GET /cities
+# -----------------------------------------------------------------------
+@app.get('/cities', tags=['Info'])
+def get_cities():
+    return {
+        'cities' : CITIES,
+        'count'  : len(CITIES),
+    }
+
+# -----------------------------------------------------------------------
+# GET /models/info
+# -----------------------------------------------------------------------
+@app.get('/models/info', response_model=ModelInfoResponse, tags=['Info'])
+def model_info():
+    return ModelInfoResponse(
+        regressor_type   = type(regressor).__name__,
+        classifier_type  = type(classifier).__name__,
+        feature_count    = len(FEATURE_COLS),
+        supported_cities = CITIES,
+        bucket_labels    = BUCKET_LABELS,
+        model_version    = APP_VERSION,
+    )
+
+# -----------------------------------------------------------------------
+# POST /predict
+# -----------------------------------------------------------------------
+@app.post('/predict', response_model=PredictResponse, tags=['Prediction'])
+def predict(req: PredictRequest):
+    try:
+        result = run_prediction(req)
+        return result
+    except ValueError as e:
+        raise HTTPException(status_code=422, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500,
+                            detail=f'Prediction failed: {str(e)}')
+
+# -----------------------------------------------------------------------
+# POST /predict/batch
+# -----------------------------------------------------------------------
+@app.post('/predict/batch', response_model=BatchPredictResponse,
+          tags=['Prediction'])
+def predict_batch(req: BatchPredictRequest):
+    if len(req.predictions) > 20:
+        raise HTTPException(
+            status_code=400,
+            detail='Batch size cannot exceed 20 predictions.'
+        )
+    try:
+        results = [run_prediction(r) for r in req.predictions]
+        return BatchPredictResponse(results=results, count=len(results))
+    except Exception as e:
+        raise HTTPException(status_code=500,
+                            detail=f'Batch prediction failed: {str(e)}')
+
+# -----------------------------------------------------------------------
+# GET / (root)
+# -----------------------------------------------------------------------
+@app.get('/', tags=['System'])
 def root():
-    return {"message": "AQI Prediction API is running"}
+    return {
+        'message'  : 'AQI Analysis API is running',
+        'docs'     : '/docs',
+        'health'   : '/health',
+        'version'  : APP_VERSION,
+    }
