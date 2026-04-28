@@ -1,0 +1,44 @@
+
+============================================================
+PHASE 4 — MODEL EVALUATION SUMMARY
+Air Quality Index Analysis
+============================================================
+
+BEST REGRESSOR
+----------------------------------------
+MAE          : 15.581
+RMSE         : 25.517
+R² Score     : 0.9425
+
+BEST CLASSIFIER
+----------------------------------------
+Accuracy     : 0.8222
+F1 (Macro)   : 0.7924
+F1 (Weighted): 0.8227
+
+CLASSIFICATION REPORT
+----------------------------------------
+              precision    recall  f1-score   support
+
+        Good       0.72      0.73      0.73        79
+Satisfactory       0.87      0.83      0.85       456
+    Moderate       0.84      0.86      0.85       452
+        Poor       0.73      0.78      0.75       150
+   Very Poor       0.78      0.79      0.79       120
+      Severe       0.80      0.77      0.79        48
+
+    accuracy                           0.82      1305
+   macro avg       0.79      0.79      0.79      1305
+weighted avg       0.82      0.82      0.82      1305
+
+
+PLOTS GENERATED
+----------------------------------------
+07_regression_metrics.png
+08_classification_metrics.png
+09_confusion_matrix.png
+10_feature_importance.png
+11_shap_summary.png
+12_actual_vs_predicted.png
+13_smote_impact.png
+============================================================
