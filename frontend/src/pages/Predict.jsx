@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import AQIGauge from '../components/AQIGauge';
 import HealthAdvisory from '../components/HealthAdvisory';
 import { CITIES, POLLUTANTS, getAQIBucket } from '../utils/aqiHelpers';
+import axios from 'axios';
 
 const defaultInputs = {
   'PM2.5': 60, PM10: 100, NO2: 40, CO: 1.5, SO2: 20, O3: 50,
@@ -12,6 +13,7 @@ export default function Predict() {
   const [city,    setCity]    = useState('Delhi');
   const [inputs,  setInputs]  = useState(defaultInputs);
   const [result,  setResult]  = useState(null);
+  const [bucket, setBucket] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const handleSlider = (key, value) =>
@@ -19,15 +21,30 @@ export default function Predict() {
 
   const handlePredict = async () => {
     setLoading(true);
-    // TODO: replace with real FastAPI call when backend is ready
-    // const res = await axios.post('http://localhost:8000/predict', { city, ...inputs });
-    // setResult(res.data.aqi);
-    await new Promise(r => setTimeout(r, 1000)); // simulate API delay
-    const mock = Math.round(
-      inputs['PM2.5'] * 1.8 + inputs.PM10 * 0.5 + inputs.NO2 * 1.2
-    );
-    setResult(Math.min(mock, 500));
-    setLoading(false);
+    try {
+      const res = await axios.post('http://localhost:8000/predict', {
+        city    : city,
+        month   : new Date().getMonth() + 1,
+        'PM2.5' : inputs['PM2.5'],
+        PM10    : inputs.PM10,
+        NO      : 0,
+        NO2     : inputs.NO2,
+        NOx     : 0,
+        NH3     : 0,
+        CO      : inputs.CO,
+        SO2     : inputs.SO2,
+        O3      : inputs.O3,
+        Benzene : 0,
+        Toluene : 0,
+        Xylene  : 0,
+      });
+      setResult(res.data.aqi_predicted);
+      setBucket(res.data.aqi_bucket);
+    } catch (err) {
+      console.error('Prediction error:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -168,7 +185,7 @@ export default function Predict() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <HealthAdvisory bucket={getAQIBucket(result)} />
+              <HealthAdvisory bucket={bucket || getAQIBucket(result)} />
             </motion.div>
           )}
         </motion.div>
