@@ -6,7 +6,7 @@ import CountUp from 'react-countup';
 import {
   Wind, Activity, MapPin,
   ArrowRight, ChevronDown,
-  AlertTriangle, Shield, Zap
+  TriangleAlert, Shield, Zap
 } from 'lucide-react';
 
 // -----------------------------------------------------------------------
@@ -33,7 +33,7 @@ const FEATURES = [
     color: '#34d399',
   },
   {
-    icon : AlertTriangle,
+    icon : TriangleAlert,
     title: 'Health Advisories',
     desc : 'Receive instant health risk assessment and actionable advisories based on predicted AQI levels.',
     color: '#f9c74f',
