@@ -1,31 +1,33 @@
 import { useState } from 'react';
-import { motion } from 'framer-motion';
-import AQIGauge from '../components/AQIGauge';
+import { motion }   from 'framer-motion';
+import AQIGauge       from '../components/AQIGauge';
 import HealthAdvisory from '../components/HealthAdvisory';
 import { CITIES, POLLUTANTS, getAQIBucket } from '../utils/aqiHelpers';
-import axios from 'axios';
+import api from '../utils/api';
 
 const defaultInputs = {
-  'PM2.5': 60, PM10: 100, NO2: 40, CO: 1.5, SO2: 20, O3: 50,
+  PM2_5: 60, PM10: 100, NO2: 40, CO: 1.5, SO2: 20, O3: 50
 };
 
 export default function Predict() {
   const [city,    setCity]    = useState('Delhi');
   const [inputs,  setInputs]  = useState(defaultInputs);
   const [result,  setResult]  = useState(null);
-  const [bucket, setBucket] = useState(null);
+  const [bucket,  setBucket]  = useState(null);
   const [loading, setLoading] = useState(false);
+  const [error,   setError]   = useState(null);
 
   const handleSlider = (key, value) =>
     setInputs(prev => ({ ...prev, [key]: Number(value) }));
 
   const handlePredict = async () => {
     setLoading(true);
+    setError(null);
     try {
-      const res = await axios.post('http://localhost:8000/predict', {
+      const res = await api.post('/predict', {
         city    : city,
         month   : new Date().getMonth() + 1,
-        'PM2.5' : inputs['PM2.5'],
+        'PM2.5' : inputs.PM2_5,
         PM10    : inputs.PM10,
         NO      : 0,
         NO2     : inputs.NO2,
@@ -41,75 +43,60 @@ export default function Predict() {
       setResult(res.data.aqi_predicted);
       setBucket(res.data.aqi_bucket);
     } catch (err) {
-      console.error('Prediction error:', err);
+      setError('Prediction failed. Backend may be waking up — try again in 30s.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div style={{ maxWidth: '64rem', margin: '0 auto', padding: '7rem 1.5rem 4rem' }}>
+    <div className="max-w-5xl mx-auto px-6 pt-28 pb-16">
 
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        style={{ marginBottom: '2.5rem' }}
+        className="mb-10"
       >
-        <h1 style={{ fontSize: '2.25rem', fontWeight: 700, color: 'white', margin: 0 }}>
-          Predict <span style={{ color: '#60a5fa' }}>AQI</span>
+        <h1 className="text-4xl font-bold text-white">
+          Predict <span className="text-blue-400">AQI</span>
         </h1>
-        <p style={{ color: '#94a3b8', marginTop: '0.5rem' }}>
-          Enter pollutant readings to get an AQI prediction
+        <p className="text-slate-400 mt-2">
+          Enter pollutant readings to get a real-time AQI prediction
         </p>
       </motion.div>
 
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '2rem',
-      }}>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 
         {/* Input Panel */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
-          style={{
-            backgroundColor: '#1e293b',
-            borderRadius: '1rem',
-            padding: '1.5rem',
-            border: '1px solid #334155',
-          }}
+          className="bg-slate-800 rounded-2xl p-6 border border-slate-700"
         >
           {/* City Selector */}
-          <div style={{ marginBottom: '1.5rem' }}>
-            <label style={{ color: '#94a3b8', fontSize: '0.875rem', display: 'block', marginBottom: '0.5rem' }}>
-              City
-            </label>
+          <div className="mb-6">
+            <label className="text-slate-400 text-sm mb-2 block">City</label>
             <select
               value={city}
               onChange={e => setCity(e.target.value)}
-              style={{
-                width: '100%',
-                backgroundColor: '#334155',
-                color: 'white',
-                borderRadius: '0.75rem',
-                padding: '0.625rem 1rem',
-                border: '1px solid #475569',
-                outline: 'none',
-                fontSize: '0.875rem',
-              }}
+              className="w-full bg-slate-700 text-white rounded-xl px-4 py-2.5
+                         border border-slate-600 focus:outline-none
+                         focus:border-blue-500 text-sm"
             >
-              {CITIES.map(c => <option key={c} value={c}>{c}</option>)}
+              {CITIES.map(c => (
+                <option key={c} value={c}>{c}</option>
+              ))}
             </select>
           </div>
 
           {/* Pollutant Sliders */}
           {POLLUTANTS.map(p => (
-            <div key={p.key} style={{ marginBottom: '1.25rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
-                <label style={{ color: '#cbd5e1', fontSize: '0.875rem' }}>{p.label}</label>
-                <span style={{ color: '#60a5fa', fontSize: '0.875rem', fontWeight: 500 }}>
-                  {inputs[p.key]} {p.unit}
+            <div key={p.key} className="mb-5">
+              <div className="flex justify-between mb-1">
+                <label className="text-slate-300 text-sm">{p.label}</label>
+                <span className="text-blue-400 text-sm font-medium">
+                  {inputs[p.key.replace('.', '_')]} {p.unit}
                 </span>
               </div>
               <input
@@ -117,12 +104,14 @@ export default function Predict() {
                 min={p.min}
                 max={p.max}
                 step={p.key === 'CO' ? 0.1 : 1}
-                value={inputs[p.key]}
-                onChange={e => handleSlider(p.key, e.target.value)}
-                style={{ width: '100%', accentColor: '#60a5fa' }}
+                value={inputs[p.key.replace('.', '_')]}
+                onChange={e =>
+                  handleSlider(p.key.replace('.', '_'), e.target.value)}
+                className="w-full accent-blue-400"
               />
-              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#475569', fontSize: '0.75rem' }}>
-                <span>{p.min}</span><span>{p.max}</span>
+              <div className="flex justify-between text-slate-600 text-xs mt-0.5">
+                <span>{p.min}</span>
+                <span>{p.max}</span>
               </div>
             </div>
           ))}
@@ -130,57 +119,54 @@ export default function Predict() {
           <button
             onClick={handlePredict}
             disabled={loading}
-            style={{
-              width: '100%',
-              marginTop: '1rem',
-              padding: '0.75rem',
-              borderRadius: '0.75rem',
-              fontWeight: 600,
-              color: 'white',
-              backgroundColor: loading ? '#1d4ed8' : '#2563eb',
-              border: 'none',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.6 : 1,
-              fontSize: '1rem',
-              transition: 'background-color 0.2s',
-            }}
+            className="w-full mt-4 py-3 rounded-xl font-semibold text-white
+                       bg-blue-600 hover:bg-blue-500 disabled:opacity-50
+                       transition-colors duration-200"
           >
             {loading ? 'Predicting...' : 'Predict AQI →'}
           </button>
+
+          {/* Error message */}
+          {error && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-3 text-red-400 text-xs text-center"
+            >
+              {error}
+            </motion.p>
+          )}
         </motion.div>
 
         {/* Result Panel */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           animate={{ opacity: 1, x: 0 }}
-          style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}
+          className="flex flex-col gap-6"
         >
-          <div style={{
-            backgroundColor: '#1e293b',
-            borderRadius: '1rem',
-            padding: '1.5rem',
-            border: '1px solid #334155',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '220px',
-          }}>
-            {result !== null ? (
+          <div className="bg-slate-800 rounded-2xl p-6 border border-slate-700
+                          flex flex-col items-center justify-center min-h-[220px]">
+            {loading ? (
+              <div className="flex flex-col items-center gap-3">
+                <div className="w-10 h-10 border-4 border-blue-400
+                                border-t-transparent rounded-full animate-spin" />
+                <p className="text-slate-400 text-sm">Fetching prediction...</p>
+              </div>
+            ) : result !== null ? (
               <>
-                <p style={{ color: '#94a3b8', fontSize: '0.875rem', marginBottom: '1rem' }}>
+                <p className="text-slate-400 text-sm mb-4">
                   Predicted AQI for {city}
                 </p>
                 <AQIGauge aqi={result} />
               </>
             ) : (
-              <p style={{ color: '#475569', fontSize: '0.875rem' }}>
+              <p className="text-slate-500 text-sm">
                 Adjust inputs and click Predict AQI
               </p>
             )}
           </div>
 
-          {result !== null && (
+          {result !== null && !loading && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
