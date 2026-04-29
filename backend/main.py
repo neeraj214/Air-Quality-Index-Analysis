@@ -13,17 +13,26 @@ from schemas import (
     BatchPredictRequest, BatchPredictResponse,
     HealthResponse, ModelInfoResponse
 )
-from predict import run_prediction, regressor, classifier
+from predict import run_prediction, load_models
+from contextlib import asynccontextmanager
+from download_models import download_models
 
 # -----------------------------------------------------------------------
-# App Init
+# App Init & Lifespan
 # -----------------------------------------------------------------------
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    download_models()   # Step 1: download from HF Hub
+    load_models()       # Step 2: load into memory
+    yield
+
 app = FastAPI(
     title       = APP_TITLE,
     description = APP_DESCRIPTION,
     version     = APP_VERSION,
     docs_url    = '/docs',
     redoc_url   = '/redoc',
+    lifespan    = lifespan,
 )
 
 # -----------------------------------------------------------------------
@@ -77,9 +86,10 @@ def get_cities():
 # -----------------------------------------------------------------------
 @app.get('/models/info', response_model=ModelInfoResponse, tags=['Info'])
 def model_info():
+    import predict as pred
     return ModelInfoResponse(
-        regressor_type   = type(regressor).__name__,
-        classifier_type  = type(classifier).__name__,
+        regressor_type   = type(pred.regressor).__name__ if pred.regressor else 'Not Loaded',
+        classifier_type  = type(pred.classifier).__name__ if pred.classifier else 'Not Loaded',
         feature_count    = len(FEATURE_COLS),
         supported_cities = CITIES,
         bucket_labels    = BUCKET_LABELS,

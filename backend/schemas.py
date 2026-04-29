@@ -76,6 +76,7 @@ class HealthResponse(BaseModel):
     timestamp : str
 
 class ModelInfoResponse(BaseModel):
+    model_config = {'protected_namespaces': ()}
     regressor_type   : str
     classifier_type  : str
     feature_count    : int

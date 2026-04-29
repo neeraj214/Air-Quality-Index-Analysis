@@ -11,16 +11,14 @@ from config import (
 from schemas import PredictRequest, PredictResponse
 
 # -----------------------------------------------------------------------
-# Load models once at startup
+# Models loaded lazily AFTER startup download completes
 # -----------------------------------------------------------------------
-regressor   = joblib.load(BEST_REGRESSOR_PATH)
-classifier  = joblib.load(BEST_CLASSIFIER_PATH)
-scaler      = joblib.load(SCALER_PATH)
-city_encoder = joblib.load(CITY_ENCODER_PATH)
-bucket_map  = joblib.load(BUCKET_MAP_PATH)
-
-# Reverse bucket map: encoded int → label string
-reverse_bucket = {v: k for k, v in bucket_map.items()}
+regressor    = None
+classifier   = None
+scaler       = None
+city_encoder = None
+bucket_map   = None
+reverse_bucket = None
 
 RISK_LEVELS = {
     'Good'        : 'Minimal',
@@ -31,18 +29,28 @@ RISK_LEVELS = {
     'Severe'      : 'Hazardous',
 }
 
+def load_models():
+    global regressor, classifier, scaler, \
+           city_encoder, bucket_map, reverse_bucket
+    print("Loading models into memory...")
+    regressor    = joblib.load(BEST_REGRESSOR_PATH)
+    classifier   = joblib.load(BEST_CLASSIFIER_PATH)
+    scaler       = joblib.load(SCALER_PATH)
+    city_encoder = joblib.load(CITY_ENCODER_PATH)
+    bucket_map   = joblib.load(BUCKET_MAP_PATH)
+    reverse_bucket = {v: k for k, v in bucket_map.items()}
+    print("All models loaded successfully.")
+
 # -----------------------------------------------------------------------
 # Feature Builder
 # -----------------------------------------------------------------------
 def build_feature_row(req: PredictRequest) -> np.ndarray:
     season    = SEASON_MAP.get(req.month, 0)
     is_winter = int(season == 0)
-
     try:
         city_encoded = city_encoder.transform([req.city])[0]
     except Exception:
         city_encoded = 0
-
     row = {
         'PM2.5'       : req.PM2_5,
         'PM10'        : req.PM10,
@@ -61,7 +69,6 @@ def build_feature_row(req: PredictRequest) -> np.ndarray:
         'Is_Winter'   : is_winter,
         'City_Encoded': city_encoded,
     }
-
     df  = pd.DataFrame([row], columns=FEATURE_COLS)
     arr = scaler.transform(df)
     return arr
@@ -70,19 +77,13 @@ def build_feature_row(req: PredictRequest) -> np.ndarray:
 # Single Prediction
 # -----------------------------------------------------------------------
 def run_prediction(req: PredictRequest) -> PredictResponse:
-    features = build_feature_row(req)
-
-    # Regression — AQI value
-    aqi_raw       = float(regressor.predict(features)[0])
-    aqi_predicted = round(max(0.0, min(500.0, aqi_raw)), 2)
-
-    # Classification — AQI Bucket
+    features       = build_feature_row(req)
+    aqi_raw        = float(regressor.predict(features)[0])
+    aqi_predicted  = round(max(0.0, min(500.0, aqi_raw)), 2)
     bucket_encoded = int(classifier.predict(features)[0])
     aqi_bucket     = reverse_bucket.get(bucket_encoded, 'Moderate')
-
-    advisory   = HEALTH_ADVISORY.get(aqi_bucket, '')
-    risk_level = RISK_LEVELS.get(aqi_bucket, 'Unknown')
-
+    advisory       = HEALTH_ADVISORY.get(aqi_bucket, '')
+    risk_level     = RISK_LEVELS.get(aqi_bucket, 'Unknown')
     return PredictResponse(
         city            = req.city,
         month           = req.month,

@@ -1,16 +1,13 @@
 import os
 from pathlib import Path
 
-# Base directory (project root, one level above backend/)
-BASE_DIR = Path(__file__).resolve().parent.parent
-
 # Model paths
-MODELS_DIR           = BASE_DIR / 'models'
-BEST_REGRESSOR_PATH  = MODELS_DIR / 'best_regressor.joblib'
-BEST_CLASSIFIER_PATH = MODELS_DIR / 'best_classifier.joblib'
-SCALER_PATH          = MODELS_DIR / 'scaler.joblib'
-CITY_ENCODER_PATH    = MODELS_DIR / 'city_encoder.joblib'
-BUCKET_MAP_PATH      = MODELS_DIR / 'bucket_map.joblib'
+MODELS_DIR           = '/app/models'
+BEST_REGRESSOR_PATH  = f'{MODELS_DIR}/best_regressor.joblib'
+BEST_CLASSIFIER_PATH = f'{MODELS_DIR}/best_classifier.joblib'
+SCALER_PATH          = f'{MODELS_DIR}/scaler.joblib'
+CITY_ENCODER_PATH    = f'{MODELS_DIR}/city_encoder.joblib'
+BUCKET_MAP_PATH      = f'{MODELS_DIR}/bucket_map.joblib'
 
 # App config
 APP_TITLE       = 'AQI Analysis API'

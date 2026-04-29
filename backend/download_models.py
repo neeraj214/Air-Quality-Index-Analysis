@@ -4,7 +4,7 @@ from pathlib import Path
 
 HF_USERNAME = os.getenv('HF_USERNAME', 'Neeraj214')
 REPO_ID     = f'{HF_USERNAME}/aqi-analysis-models'
-MODELS_DIR  = Path('models')
+MODELS_DIR  = Path('/app/models')
 
 MODEL_FILES = [
     'best_regressor.joblib',
