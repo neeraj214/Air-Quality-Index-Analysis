@@ -22,6 +22,7 @@ ALLOWED_ORIGINS = [
     'http://localhost:5173',
     'http://localhost:3000',
     'https://*.vercel.app',
+    'https://neeraj214-aqi-analysis-backend.hf.space',
 ]
 
 # Feature columns (must match Phase 2 exactly)
