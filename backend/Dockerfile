@@ -10,8 +10,8 @@ RUN pip install huggingface_hub
 # Copy backend source
 COPY backend/ ./backend/
 
-# Create models directory
-RUN mkdir -p models/
+# Copy models directory
+COPY models/ ./models/
 
 # Set PYTHONPATH so imports resolve from backend/
 ENV PYTHONPATH=/app/backend
