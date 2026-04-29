@@ -24,6 +24,13 @@ This project provides an end-to-end data science and engineering pipeline for AQ
 
 The system specifically targets major Indian metropolitan areas: **Delhi, Bengaluru, Kolkata, and Hyderabad**.
 
+## 🔗 Live Demo
+| Component | URL                                                          |
+|-----------|--------------------------------------------------------------|
+| Frontend  | https://air-quality-index-analysis.vercel.app                |
+| Backend   | https://neeraj214-aqi-analysis-backend.hf.space/docs         |
+| Models    | https://huggingface.co/Neeraj214/aqi-analysis-models         |
+
 ## ✨ Key Features
 
 - 📉 **Advanced Analytics**: Detailed EDA of pollutant trends across different seasons and cities.
@@ -40,11 +47,11 @@ The system specifically targets major Indian metropolitan areas: **Delhi, Bengal
 
 | Area | Technologies |
 | :--- | :--- |
-| **Frontend** | React, Tailwind CSS, Framer Motion, Recharts, Axios |
-| **Backend** | FastAPI, Uvicorn, Pydantic |
-| **Machine Learning** | Scikit-learn, XGBoost, LightGBM, SHAP, Joblib |
-| **Data Processing**| Pandas, NumPy, Imbalanced-learn (SMOTE) |
-| **DevOps** | Docker, Git |
+| **Frontend** | React, Tailwind CSS, Framer Motion, Axios |
+| **Backend** | FastAPI, Uvicorn, Docker |
+| **Machine Learning** | Scikit-learn, XGBoost, LightGBM, SHAP, SMOTE |
+| **Data Processing**| Pandas, NumPy |
+| **Deployment** | HF Spaces (backend), Vercel (frontend), Hugging Face Hub (Models) |
 
 ## 📅 Project Status
 
@@ -54,7 +61,7 @@ The system specifically targets major Indian metropolitan areas: **Delhi, Bengal
 - [x] **Phase 4: Model Evaluation** - Detailed metrics (R², MAE, RMSE) and SHAP analysis.
 - [x] **Phase 5: FastAPI Backend** - Building the production-ready REST API.
 - [x] **Phase 6: React Frontend** - Developing the interactive dashboard.
-- [ ] **Phase 7: Deployment** - Final deployment to cloud platforms.
+- [x] **Phase 7: Deployment** - Final deployment to Hugging Face Spaces and Vercel.
 
 ## ⚙️ Installation
 
