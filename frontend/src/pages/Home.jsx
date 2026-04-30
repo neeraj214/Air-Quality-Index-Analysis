@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useScroll,
          useTransform, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import CountUp from 'react-countup';
+import CountUpModule from 'react-countup';
+const CountUp = CountUpModule.default || CountUpModule;
 import {
   Wind, Activity, MapPin,
   ArrowRight, ChevronDown,
